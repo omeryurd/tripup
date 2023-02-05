@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "group",
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string",
+        "minLength": 2
+      },
+      "description": {
+        "type": "string",
+        "minLength": 2
+      },
+      "activityType": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "name",
+      "description",
+      "activityType"
+    ],
+    "additionalProperties": false
+  }
