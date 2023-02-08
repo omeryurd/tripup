@@ -37,6 +37,8 @@ interface EditTodoProps {
     }
 
   }
+  location: any
+  
   history: History
   auth: Auth
 }
