@@ -16,7 +16,7 @@
       }
     },
     "required": [
-      "name",
+      "title",
       "description",
       "activityType"
     ],

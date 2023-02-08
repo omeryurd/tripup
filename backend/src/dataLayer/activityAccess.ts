@@ -3,6 +3,7 @@ import {
   DynamoDBDocumentClient,
   PutCommand,
   QueryCommand,
+  ScanCommand,
   UpdateCommand,
   DeleteCommand
 } from "@aws-sdk/lib-dynamodb";
@@ -77,6 +78,38 @@ export async function * queryGenerator (userId: string) {
         yield items
 
     } while (LastEvaluatedKey)
+
+}
+
+export async function * queryGeneratorAll () {
+
+  let LastEvaluatedKey;
+  let date=new Date()
+  date.setDate(date.getDate()-14)
+  const createdAt = date.toISOString()
+  do {
+
+      const command = new ScanCommand({
+        TableName: tableName,
+        IndexName: process.env.ACTIVITIES_CREATED_AT_INDEX,
+        Limit: 50,
+        FilterExpression: "#createdAt>:createdAt",
+        ExpressionAttributeNames:{
+          "#createdAt":"createdAt",
+        },
+        ExpressionAttributeValues: {
+          ":createdAt": createdAt
+        },
+        ExclusiveStartKey: LastEvaluatedKey
+      })
+
+      const response = await dynamo.send(command)
+      LastEvaluatedKey = response.LastEvaluatedKey
+
+      const items = response.Items
+      yield items
+
+  } while (LastEvaluatedKey)
 
 }
 

@@ -3,6 +3,7 @@ import { Link, Route, Router, Switch } from 'react-router-dom'
 import { Grid, Menu, Segment } from 'semantic-ui-react'
 
 import Auth from './auth/Auth'
+import { YourPosts} from './components/YourPosts'
 import { EditPost } from './components/EditPost'
 import { LogIn } from './components/LogIn'
 import { NotFound } from './components/NotFound'
@@ -59,10 +60,26 @@ export default class App extends Component<AppProps, AppState> {
         <Menu.Item name="home">
           <Link to="/">Home</Link>
         </Menu.Item>
+        
+        {this.yourPostsButton()}
+        
 
         <Menu.Menu position="right">{this.logInLogOutButton()}</Menu.Menu>
       </Menu>
     )
+  }
+  yourPostsButton() {
+    if (this.props.auth.isAuthenticated()) {
+      return (
+        <Menu.Item name="your-posts" >
+          <Link to="/your-posts">Your Posts</Link>
+        </Menu.Item>
+      )
+    } else {
+      return (
+        null
+      )
+    }
   }
 
   logInLogOutButton() {
@@ -101,6 +118,14 @@ export default class App extends Component<AppProps, AppState> {
           exact
           render={props => {
             return <EditPost {...props} auth={this.props.auth} />
+          }}
+        />
+
+        <Route
+          path="/your-posts"
+          exact
+          render={props => {
+            return <YourPosts {...props} auth={this.props.auth} />
           }}
         />
 

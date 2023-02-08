@@ -1,6 +1,6 @@
 # TODO: Change the name of the org 
-app: serverless-todo-app
-service: serverless-todo-app
+app: serverless-tripup-app
+service: serverless-tripup-app
 
 plugins:
   - serverless-webpack
@@ -23,9 +23,9 @@ provider:
   # Use these variables in the functions and resouorces section below. For example, 
   # ${self:provider.environment.ATTACHMENT_S3_BUCKET}
   environment:
-    TODOS_TABLE: Todos-${self:provider.stage}
-    TODOS_CREATED_AT_INDEX: CreatedAtIndex
-    ATTACHMENT_S3_BUCKET: serverless-${aws:accountId}-c4-todos-${self:provider.stage}
+    ACTIVITIES_TABLE: Posts-${self:provider.stage}
+    ACTIVITIES_CREATED_AT_INDEX: CreatedAtIndex
+    ATTACHMENT_S3_BUCKET: serverless-${aws:accountId}-ud-tripup-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
     JWKS_URL_AUTH_O: https://dev-0dreid14ny0rwnse.us.auth0.com/.well-known/jwks.json
     REGION: us-west-1
@@ -50,21 +50,35 @@ functions:
 
   # TODO: Configure this function - 
   # Provide iamRoleStatements property for performing Actions on DynamoDB
-  GetTodos:
-    handler: src/lambda/http/getTodos.handler
+  GetActivities:
+    handler: src/lambda/http/getActivities.handler
     events:
       - http:
           method: get
-          path: todos
+          path: activities
           cors: true
           authorizer: Auth
-    iamRoleStatementsName: iam-role-get-todos-${self:provider.stage}
+    iamRoleStatementsName: iam-role-get-activities-${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.TODOS_CREATED_AT_INDEX}
-   
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.ACTIVITIES_TABLE}/index/${self:provider.environment.ACTIVITIES_CREATED_AT_INDEX}
+  
+  GetFeed:
+    handler: src/lambda/http/getFeed.handler
+    events:
+      - http:
+          method: get
+          path: feed
+          cors: true
+          authorizer: Auth
+    iamRoleStatementsName: iam-role-get-feed-${self:provider.stage}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.ACTIVITIES_TABLE}
 
 
 
@@ -72,83 +86,83 @@ functions:
   # Provide iamRoleStatements property. Decide the Actions and AWS Resource. 
   # To refer to an AWS resource defined in the "Resources" section, you can use "Resource: !GetAtt <resource-name>.Arn"
   # To validate incoming HTTP requests, we have provided the request schemas in function definition below. 
-  CreateTodo:
-    handler: src/lambda/http/createTodo.handler
+  CreateActivity:
+    handler: src/lambda/http/createActivity.handler
     events:
       - http:
           method: post
-          path: todos
+          path: activities
           cors: true
           authorizer: Auth
           request:
             schemas:
-              application/json: ${file(models/create-todo-model.json)}
-    iamRoleStatementsName: iam-role-create-todos-${self:provider.stage}
+              application/json: ${file(models/create-activity-model.json)}
+    iamRoleStatementsName: iam-role-create-activities-${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:PutItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.ACTIVITIES_TABLE}
 
 
   # TODO: Configure this function
   # Provide property for setting up CORS, Authorizer, iamRoleStatements, and request schemas
-  UpdateTodo:
-    handler: src/lambda/http/updateTodo.handler
+  UpdateActivity:
+    handler: src/lambda/http/updateActivity.handler
     events:
       - http:
           method: patch
-          path: todos/{todoId}
+          path: activities/{postId}
           cors: true
           authorizer: Auth
           request:
             schemas:
-              application/json: ${file(models/update-todo-model.json)}
-    iamRoleStatementsName: iam-role-update-todo-${self:provider.stage}
+              application/json: ${file(models/update-activity-model.json)}
+    iamRoleStatementsName: iam-role-update-activity-${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:UpdateItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.ACTIVITIES_TABLE}
 
           
 
   # TODO: Configure this function
   # Provide property for setting up CORS, Authorizer, iamRoleStatements
-  DeleteTodo:
-    handler: src/lambda/http/deleteTodo.handler
+  DeleteActivity:
+    handler: src/lambda/http/deleteActivity.handler
     events:
       - http:
           method: delete
-          path: todos/{todoId}
+          path: activities/{postId}
           cors: true
           authorizer: Auth
-    iamRoleStatementsName: iam-role-delete-todo-${self:provider.stage}
+    iamRoleStatementsName: iam-role-delete-activity-${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:DeleteItem
           - dynamodb:GetItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.ACTIVITIES_TABLE}
 
 
   # TODO: Configure this function
   # Provide property for setting up CORS, Authorizer, iamRoleStatements
   GenerateUploadUrl:
-    handler: src/lambda/http/generateUploadUrl.handler
+    handler: src/lambda/http/generateUploadUrlActivity.handler
     events:
       - http:
           method: post
-          path: todos/{todoId}/attachment
+          path: activities/{postId}/attachment
           cors: true
           authorizer: Auth
-    iamRoleStatementsName: iam-role-update-todos-${self:provider.stage}
+    iamRoleStatementsName: iam-role-update-activities-${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:UpdateItem
           - dynamodb:GetItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.ACTIVITIES_TABLE}
       - Effect: Allow
         Action:
           - s3:PutObject
@@ -187,7 +201,7 @@ resources:
           Ref: ApiGatewayRestApi
     
     # TODO: Create a DynamoDB table with local secondary index and a composite key
-    TodosTable:
+    ActivitiesTable:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
@@ -195,17 +209,17 @@ resources:
             AttributeType: S
           - AttributeName: createdAt
             AttributeType: S
-          - AttributeName: todoId
+          - AttributeName: postId
             AttributeType: S
         KeySchema:
-          - AttributeName: todoId
+          - AttributeName: postId
             KeyType: HASH
           - AttributeName: userId
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
-        TableName: ${self:provider.environment.TODOS_TABLE}
+        TableName: ${self:provider.environment.ACTIVITIES_TABLE}
         GlobalSecondaryIndexes:
-          - IndexName: ${self:provider.environment.TODOS_CREATED_AT_INDEX}
+          - IndexName: ${self:provider.environment.ACTIVITIES_CREATED_AT_INDEX}
             KeySchema:
               - AttributeName: userId
                 KeyType: HASH

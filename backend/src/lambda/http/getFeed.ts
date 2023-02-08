@@ -1,24 +1,29 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import 'source-map-support/register'
-//import * as middy from 'middy'
+
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import middy from "@middy/core"
 import cors from "@middy/http-cors"
 
-//import { cors } from 'middy/middlewares'
-import { CreateTodoRequest } from '../../requests/CreateTodoRequest'
+import {  getFeedItems } from '../../businessLogic/activities'
 import { getUserId } from '../utils';
-import { createTodo } from '../../businessLogic/todos'
 
+// TODO: Get all TODO items for a current user
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const parsedBody: CreateTodoRequest = JSON.parse(event.body);
     const userId = getUserId(event);
-    try {
-      const response = await createTodo(userId, parsedBody);
+    const response = await getFeedItems();
+    return {
+      statusCode: response.httpCode,
+      body: JSON.stringify({
+        items: response.items
+      })
+    }
+/*      try {
+      const response = await getTodosByUser(userId);
       return {
         statusCode: response.httpCode,
         body: JSON.stringify({
-          item: response.item
+          items: response.items
         })
       }
     } catch (error) {
@@ -26,11 +31,11 @@ export const handler = middy(
         statusCode: error.httpCode,
         body: JSON.stringify(error.name)
       }
-    }
+    }  */
+
 
   }
 )
-
 handler.use(
   cors({
     credentials: true

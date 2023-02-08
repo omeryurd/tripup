@@ -8,7 +8,8 @@ import {
     queryGenerator,
     getSignedURL,
     updateAttachment,
-    sendUpdateRequestToDB
+    sendUpdateRequestToDB,
+    queryGeneratorAll
 
 } from '../dataLayer/activityAccess';
 
@@ -76,6 +77,20 @@ export async function deleteActivityItem(userId: string, postId: string ){
 export async function getTodosByUserPaginated(userId: string){
     let results = []
     let generator = queryGenerator(userId)
+    
+        for await (const items of generator) {
+            results = results.concat(items)
+        }
+        return {
+            httpCode: 200,
+            items: results
+        }
+ 
+}
+
+export async function getFeedItems(){
+    let results = []
+    let generator = queryGeneratorAll()
     
         for await (const items of generator) {
             results = results.concat(items)

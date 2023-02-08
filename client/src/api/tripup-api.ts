@@ -17,6 +17,19 @@ export async function getActivities(idToken: string): Promise<Activity[]> {
   return response.data.items
 }
 
+export async function getFeed(idToken: string): Promise<Activity[]> {
+    console.log('Fetching todos')
+  
+    const response = await Axios.get(`${apiEndpoint}/feed`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${idToken}`
+      },
+    })
+    console.log('Activities:', response.data)
+    return response.data.items
+  }
+
 export async function createActivity(
   idToken: string,
   newActivity: CreateActivityRequest

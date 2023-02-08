@@ -18,7 +18,7 @@ import {
   Select
 } from 'semantic-ui-react'
 
-import { createActivity, deleteActivity, getActivities,getFeed, patchActivity } from '../api/tripup-api'
+import { createActivity, deleteActivity, getActivities, patchActivity } from '../api/tripup-api'
 import Auth from '../auth/Auth'
 import { Activity } from '../types/Activity'
 import { Todo } from '../types/Todo'
@@ -57,7 +57,7 @@ interface ActivitiesState {
   loading: boolean
 }
 
-export class Posts extends React.PureComponent<ActivitiesProps, ActivitiesState> {
+export class YourPosts extends React.PureComponent<ActivitiesProps, ActivitiesState> {
   state: ActivitiesState = {
     activities: [],
     title: '',
@@ -138,7 +138,7 @@ export class Posts extends React.PureComponent<ActivitiesProps, ActivitiesState>
 
   async componentDidMount() {
     try {
-      const activities = await getFeed(this.props.auth.getIdToken())
+      const activities = await getActivities(this.props.auth.getIdToken())
       this.setState({
         activities,
         loading: false
@@ -163,32 +163,32 @@ export class Posts extends React.PureComponent<ActivitiesProps, ActivitiesState>
   }
   renderCreateActivityForm(){
     return(
-      <Form onSubmit={this.onTodoCreate}>
-      <Form.Field>
-        <label>Title</label>
-        <input placeholder='Give a descriptive title...' name="title" 
-        onChange={this.handleTitleChange}
-        />
-      </Form.Field>
-      <Form.Field>
-        <label>Description</label>
-        <textarea placeholder='Tell others how fun it was...' name="description"
-        onChange={this.handleDescriptionChange}
-        />
-      </Form.Field>
-      
-      <Form.Field>
-      <Select
-      placeholder='Select Activity Type'
-      options={activityOptions} 
-      defaultValue={this.state.activity}
-      onChange= {this.handleActivityChange}
+    <Form onSubmit={this.onTodoCreate}>
+    <Form.Field>
+      <label>Title</label>
+      <input placeholder='Give a descriptive title...' name="title" 
+      onChange={this.handleTitleChange}
       />
-     </Form.Field>
-          
-      
-      <Form.Button content='Submit' />
-    </Form>
+    </Form.Field>
+    <Form.Field>
+      <label>Description</label>
+      <textarea placeholder='Tell others how fun it was...' name="description"
+      onChange={this.handleDescriptionChange}
+      />
+    </Form.Field>
+    
+    <Form.Field>
+    <Select
+    placeholder='Select Activity Type'
+    options={activityOptions} 
+    defaultValue={this.state.activity}
+    onChange= {this.handleActivityChange}
+    />
+   </Form.Field>
+        
+    
+    <Form.Button content='Submit' />
+  </Form>
     )
   }
 
@@ -212,20 +212,10 @@ export class Posts extends React.PureComponent<ActivitiesProps, ActivitiesState>
   }
 
   renderActList() {
-    console.log("rendering list")
     const acts = [...this.state.activities];
-    acts.sort((a,b) =>{ 
-    if (a.createdAt < b.createdAt) {
-      return 1;
-    }
-    if (a.createdAt > b.createdAt) {
-      return -1;
-    }
-    return 0;
-  });
     return (
       <Feed>
-        {acts.map((act, pos) => {
+        {acts.reverse().map((act, pos) => {
           return (
             <Feed.Event>
       <Feed.Label>
@@ -235,6 +225,16 @@ export class Posts extends React.PureComponent<ActivitiesProps, ActivitiesState>
         <Feed.Summary>
           <a>User</a> posted
           <Feed.Date>{act.createdAt}</Feed.Date>
+          
+          <Button
+                  icon
+                  circular
+                  color="blue"
+                  onClick={() => this.onEditButtonClick(act.postId)}
+                  size="small"
+                >
+                  <Icon name="pencil" />
+                </Button>
           <Feed.Extra text>
           {act.title}
           </Feed.Extra>
