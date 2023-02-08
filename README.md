@@ -9,12 +9,12 @@ This application allows creating/removing/updating/fetching activity/post items.
 ## Prerequisites
 
 * <a href="https://manage.auth0.com/" target="_blank">Auth0 account</a>
-* <a href="https://nodejs.org/en/download/package-manager/" target="_blank">NodeJS</a> version up to 12.xx 
+* <a href="https://nodejs.org/en/download/package-manager/" target="_blank">NodeJS</a> version up to 18.xx 
 * Serverless 
    * Create a <a href="https://dashboard.serverless.com/" target="_blank">Serverless account</a> user
-   * Install the Serverless Framework’s CLI  (up to VERSION=2.21.1). Refer to the <a href="https://www.serverless.com/framework/docs/getting-started/" target="_blank">official documentation</a> for more help.
+   * Install the Serverless Framework’s CLI  (up to VERSION=3.26.0). Refer to the <a href="https://www.serverless.com/framework/docs/getting-started/" target="_blank">official documentation</a> for more help.
    ```bash
-   npm install -g serverless@2.21.1
+   npm install -g serverless
    serverless --version
    ```
    * Login and configure serverless to use the AWS credentials 
