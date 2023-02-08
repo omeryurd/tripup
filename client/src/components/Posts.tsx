@@ -212,7 +212,7 @@ export class Posts extends React.PureComponent<ActivitiesProps, ActivitiesState>
   }
 
   renderActList() {
-    console.log("rendering list")
+    
     const acts = [...this.state.activities];
     acts.sort((a,b) =>{ 
     if (a.createdAt < b.createdAt) {
@@ -224,7 +224,7 @@ export class Posts extends React.PureComponent<ActivitiesProps, ActivitiesState>
     return 0;
   });
     return (
-      <Feed>
+      <Feed size="large">
         {acts.map((act, pos) => {
           return (
             <Feed.Event>
@@ -239,8 +239,9 @@ export class Posts extends React.PureComponent<ActivitiesProps, ActivitiesState>
           {act.title}
           </Feed.Extra>
         <Feed.Extra>
-            
-
+        {act.attachmentUrl && (
+                <Image src={act.attachmentUrl} size="small" wrapped />
+        )}
             
           
         </Feed.Extra>
@@ -249,7 +250,7 @@ export class Posts extends React.PureComponent<ActivitiesProps, ActivitiesState>
         <Feed.Extra text>
           {act.description}
         </Feed.Extra>
-        <Feed.Extra text>
+        <Feed.Extra text size="small">
           <b>{act.activityType}</b>
         </Feed.Extra>
       </Feed.Content>

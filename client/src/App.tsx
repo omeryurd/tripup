@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
 import { Link, Route, Router, Switch } from 'react-router-dom'
-import { Grid, Menu, Segment } from 'semantic-ui-react'
+import { Grid, Menu, Segment,Icon } from 'semantic-ui-react'
 
 import Auth from './auth/Auth'
 import { YourPosts} from './components/YourPosts'
-import { EditPost } from './components/EditPost'
+import { AddPhoto } from './components/AddPhoto'
+import { EditPost } from './components/EditYourPost'
 import { LogIn } from './components/LogIn'
 import { NotFound } from './components/NotFound'
 import { Posts } from './components/Posts'
@@ -57,6 +58,10 @@ export default class App extends Component<AppProps, AppState> {
   generateMenu() {
     return (
       <Menu>
+        <Menu.Item as='a' header>
+          <Icon name="angle double right" />
+          <Link to="/">TripUp</Link>
+        </Menu.Item>
         <Menu.Item name="home">
           <Link to="/">Home</Link>
         </Menu.Item>
@@ -110,6 +115,14 @@ export default class App extends Component<AppProps, AppState> {
           exact
           render={props => {
             return <Posts {...props} auth={this.props.auth} />
+          }}
+        />
+
+        <Route
+          path="/activities/:postId/add-photo"
+          exact
+          render={props => {
+            return <AddPhoto {...props} auth={this.props.auth} />
           }}
         />
 

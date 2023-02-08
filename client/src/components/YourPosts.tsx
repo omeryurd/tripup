@@ -81,8 +81,12 @@ export class YourPosts extends React.PureComponent<ActivitiesProps, ActivitiesSt
     this.setState({ activity: data.value })
   }
 
-  onEditButtonClick = (postId: string) => {
-    this.props.history.push(`/activities/${postId}/edit`)
+  onEditButtonClick = (postId: string, title: string, description: string, activity: string) => {
+    
+    this.props.history.push(`/activities/${postId}/edit`,{description: description,activity: activity,title: title})
+  }
+  onAddPhotoButtonClick = (postId: string) => {
+    this.props.history.push(`/activities/${postId}/add-photo`)
   }
 
   onTodoCreate = async (event:  React.SyntheticEvent) => {
@@ -91,7 +95,7 @@ export class YourPosts extends React.PureComponent<ActivitiesProps, ActivitiesSt
         if (!this.state.title|| !this.state.description) {
             alert('Title, description and activity type should be provided')
             return
-          }
+        }
 
         const newPost = await createActivity(this.props.auth.getIdToken(), {
         title: this.state.title,
@@ -111,12 +115,16 @@ export class YourPosts extends React.PureComponent<ActivitiesProps, ActivitiesSt
 
   onTodoDelete = async (postId: string) => {
     try {
-      await deleteActivity(this.props.auth.getIdToken(), postId)
+      const res = window.confirm("Are you sure?")
+      if (res){await deleteActivity(this.props.auth.getIdToken(), postId)
       this.setState({
         activities: this.state.activities.filter(activity => activity.postId !== postId)
-      })
+      })} else{
+        return
+      }
+
     } catch {
-      alert('Todo deletion failed')
+      alert('Deletion failed')
     }
   }
 
@@ -214,7 +222,7 @@ export class YourPosts extends React.PureComponent<ActivitiesProps, ActivitiesSt
   renderActList() {
     const acts = [...this.state.activities];
     return (
-      <Feed>
+      <Feed size="large">
         {acts.reverse().map((act, pos) => {
           return (
             <Feed.Event>
@@ -230,18 +238,36 @@ export class YourPosts extends React.PureComponent<ActivitiesProps, ActivitiesSt
                   icon
                   circular
                   color="blue"
-                  onClick={() => this.onEditButtonClick(act.postId)}
+                  onClick={() => this.onEditButtonClick(act.postId, act.title, act.description, act.activityType)}
                   size="small"
                 >
                   <Icon name="pencil" />
+                </Button>
+                <Button
+                  icon
+                  circular
+                  onClick={() => this.onAddPhotoButtonClick(act.postId)}
+                  size="small"
+                >
+                  <Icon name="file image" />
+                </Button>
+                <Button
+                  icon
+                  circular
+                  color="red"
+                  onClick={() => this.onTodoDelete(act.postId)}
+                  size="small"
+                >
+                  <Icon name="delete" />
                 </Button>
           <Feed.Extra text>
           {act.title}
           </Feed.Extra>
         <Feed.Extra>
             
-
-            
+        {act.attachmentUrl && (
+                <Image src={act.attachmentUrl} size="medium" wrapped />
+        )}
           
         </Feed.Extra>
           

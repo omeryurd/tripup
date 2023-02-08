@@ -28,8 +28,8 @@ export async function sendUpdateRequestToDB(userId: string, updatedActivity: Upd
       UpdateExpression:"set #title = :title, #description=:description, #activityType=:activityType",
       ConditionExpression:"userId = :userId",
       ExpressionAttributeNames:{
-        "#name":"name",
-        "#dueDate":"dueDate",
+        "#title":"title",
+        "#description":"description",
         "#activityType":"activityType"
 
       },
